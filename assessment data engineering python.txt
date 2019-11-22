@@ -1,0 +1,29 @@
+Assesment IDM BTN 
+Engineering and Service Offerings
+
+
+
+Please deliver the following in git and perfectly configurable code:
+
+Django CRUD project, containing: 
+- a method to upload an .csv file. You are allowed to choose your own dataset.
+- a method to create, update and delete data (CRUD operations) on the frontend.
+- a RESTful API using an API client (e.g. postman, insomnia) to:
+	- receive data from the database (GET request)
+	- save data in the database (POST request)
+- 2 statistical methods to manipulate data and render to the frontend. 
+
+Notes:
+- all the data should be saved in a postgres database	
+- your application should contain 3 pages and urls:
+	- page to upload the csv
+	- page to see all rows of the database with a create, update, delete button (CRUD operations). 
+	- page containing 2 visualizations of your own choice showing information from the data. 
+- choose your dataset: https://www.dataquest.io/blog/free-datasets-for-projects/
+
+RULES
+- all logic and queries should be done in the views.py 
+- DB modeling in models.py
+- you are free to use styling or such, but we are focusing on logic and functionality.
+
+ 
