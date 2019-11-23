@@ -1,0 +1,33 @@
+<h1>Salaries</h1>
+
+<table border="1">
+<thead>
+    <tr>
+    <th>Employee Name</th>
+    <th>Employee Status</th>
+    <th>Salary</th>
+    <th>Pay Basis</th>
+    <th>Position Title</th>
+    <th>View</th>
+    <th>Edit</th>
+    <th>Delete</th>
+    </tr>
+
+</thead>
+<tbody>
+    {% for salary in object_list %}
+    <tr>
+    <td>{{ salary.employee_name }}</td>
+    <td>{{ salary.employee_status }}</td>
+    <td>{{ salary.salary }}</td>
+    <td>{{ salary.pay_basis }}</td>
+    <td>{{ salary.position_title }}</td>
+    <td><a href="{% url "salary_view" salary.id %}">view</a></td>
+    <td><a href="{% url "salary_edit" salary.id %}">edit</a></td>
+    <td><a href="{% url "salary_delete" salary.id %}">delete</a></td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+<a href="{% url "salary_new" %}">New</a>
