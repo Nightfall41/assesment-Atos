@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
+from assesmentAtos.views import whitehousesalary,csv_upload
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('salary/', whitehousesalary,name='White House Salary'),
+    path('uploadCSV/',csv_upload,name="CSVUpload")
 ]
