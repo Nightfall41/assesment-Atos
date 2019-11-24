@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 'assesmentAtos.apps.AssesmentatosConfig'
-    'assesmentAtos'
+    'assesmentAtos',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

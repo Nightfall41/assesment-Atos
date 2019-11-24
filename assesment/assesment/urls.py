@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from assesmentAtos.views import whitehousesalary,csv_upload
+from assesmentAtos.views import whitehousesalary,csv_upload,index,add_salary,get_salary
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('assesmentAtos/', include('assesmentAtos.urls')),
     path('salary/', whitehousesalary,name='White House Salary'),
-    path('uploadCSV/',csv_upload,name="CSVUpload")
+    path('uploadCSV/',csv_upload,name="CSVUpload"),  
+    path('api/',index),
+    path('api/addSalary/',add_salary),
+    path('api/<str:id>',get_salary)
 ]

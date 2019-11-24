@@ -5,10 +5,13 @@ from django.http import HttpResponse
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
+from rest_framework import generics
+from .serializer import SalarySerializer
 from django.urls import reverse_lazy
 from .models import WhiteHouseSalaries
 from .forms import WhiteHouseSalaryForm
-
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 def whitehousesalary(request):
     template = "whitehousesalary.html"
@@ -97,3 +100,41 @@ def salary_delete(request, pk, template_name='/home/sargit/assesment/assesment/a
         salary.delete()
         return redirect('salary_list')
     return render(request, template_name, {'object': salary})
+
+def index(request):
+    response = json.dumps([{}])
+    return HttpResponse(response,content_type='text/json')
+
+def get_salary(request,id):
+    if request.method =='GET':
+        try:
+            employee = WhiteHouseSalaries.objects.get(id=id)
+            response = json.dumps({'employee_name': employee.employee_name , 'employee_status': employee.employee_status,'salary':employee.salary,'pay_basis':employee.pay_basis,'position_titile': employee.position_title})
+        except:
+            response = json.dumps([{'Error': "Nothing found"}])
+    return HttpResponse(response,content_type='text/json')
+
+@csrf_exempt
+def add_salary(request):
+    if request.method == 'POST':
+        payload = json.loads(json.dumps(request.POST))
+        employee_name= payload['employee_name']
+        employee_status=payload['employee_status']
+        salary=payload['salary']
+        pay_basis=payload['pay_basis']
+        position_title=payload['position_title']
+        entry = WhiteHouseSalaries(
+                employee_name=employee_name,
+                employee_status=employee_status,
+                salary=salary,
+                pay_basis=pay_basis,
+                position_title=position_title
+        )
+        try:
+            entry.save()
+            response = json.dumps([{"succes": 'salary added'}])
+        except:
+            response = json.dumps([{"Error" : 'Shit went sideways'}])
+    return HttpResponse(response,content_type='text/json')
+
+
