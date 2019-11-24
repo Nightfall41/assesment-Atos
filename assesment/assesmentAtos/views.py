@@ -1,13 +1,11 @@
 from django.shortcuts import render ,redirect ,get_object_or_404
-import csv
-import io
+import csv, io ,json
 from django.http import HttpResponse
 from django.contrib import messages
 from .models import WhiteHouseSalaries
 from .forms import WhiteHouseSalaryForm
 from django_pandas.io import read_frame
 from django.views.decorators.csrf import csrf_exempt
-import json
 
 
 ########################################### CSV upload methods ######################################################################
@@ -82,8 +80,8 @@ def salary_create(request, template_name='/home/sargit/assesment/assesment/asses
     return render(request, template_name, {'form': form})
 
 # function that creates new row in the database
-def salary_update(request, pk, template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_form.html'):
-    salary = get_object_or_404(WhiteHouseSalaries, pk=pk)
+def salary_update(request, id, template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_form.html'):
+    salary = get_object_or_404(WhiteHouseSalaries, pk=id)
     form = WhiteHouseSalaryForm(request.POST or None, instance=salary)
     if form.is_valid():
         form.save()
@@ -105,7 +103,7 @@ def salary_delete(request, pk, template_name='/home/sargit/assesment/assesment/a
 ########################################### API methods ######################################################################
 
 def index(request):
-    response = json.dumps({})
+    response = json.dumps({"Usage api getsalary": "example : http://127.0.0.1:8000/api/50", "Usage Post": "use postman witj json body { form } http://127.0.0.1:8000/api/addSalary/"})
     return HttpResponse(response,content_type='text/json')
 
 def get_salary(request,id):
@@ -154,15 +152,18 @@ def statistics_salary(request,template_name='/home/sargit/assesment/assesment/as
     maxSalary= df['salary'].max()
     minSalary= df['salary'].min()
     totalSalaryExpenses= df['salary'].sum()
-    stdSalary = df['salary'].std()
+    employeeTypes = df['employee_status'].unique()
 
-    employeeTypes = df.groupby(['employee_status']).sum()
+    employeeMeanTable = df.groupby('employee_status').salary.mean()
 
-    print(employeeTypes['salary'])
+    employeeMean=[]
+    for row in employeeMeanTable:
+        employeeMean.append(row)
 
 
     data = {}
     data['employeeTypes'] = employeeTypes
+    data['employeeMean']= employeeMean
     data['mean'] = meanSalary
     data['max'] =maxSalary
     data['min'] = minSalary
