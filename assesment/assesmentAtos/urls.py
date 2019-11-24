@@ -8,5 +8,5 @@ urlpatterns = [
     path('new', views.salary_create, name='salary_new'),
     path('edit/<int:pk>', views.salary_update, name='salary_edit'),
     path('delete/<int:pk>', views.salary_delete, name='salary_delete'),
-
+    path('statistics/',views.statistics_salary,name='salary_statistics')
 ]

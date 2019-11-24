@@ -1,4 +1,7 @@
 <h1>Salaries</h1>
+<a href="http://127.0.0.1:8000/statistics/">statistics</a>
+
+
 
 <table border="1">
 <thead>
@@ -22,9 +25,9 @@
     <td>{{ salary.salary }}</td>
     <td>{{ salary.pay_basis }}</td>
     <td>{{ salary.position_title }}</td>
-    <td><a href="{% url "salary_view" salary.id %}">view</a></td>
-    <td><a href="{% url "salary_edit" salary.id %}">edit</a></td>
-    <td><a href="{% url "salary_delete" salary.id %}">delete</a></td>
+    <td><a href="{% url "salary_view" salary.id %}">View</a></td>
+    <td><a href="{% url "salary_edit" salary.id %}">Edit</a></td>
+    <td><a href="{% url "salary_delete" salary.id %}">Delete</a></td>
     </tr>
     {% endfor %}
 </tbody>

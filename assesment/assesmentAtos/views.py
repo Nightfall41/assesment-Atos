@@ -2,43 +2,33 @@ from django.shortcuts import render ,redirect ,get_object_or_404
 import csv
 import io
 from django.http import HttpResponse
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib import messages
-from rest_framework import generics
-from .serializer import SalarySerializer
-from django.urls import reverse_lazy
 from .models import WhiteHouseSalaries
 from .forms import WhiteHouseSalaryForm
+from django_pandas.io import read_frame
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+
+########################################### CSV upload methods ######################################################################
 def whitehousesalary(request):
     template = "whitehousesalary.html"
-
     if request.method == "POST":
         form = WhiteHouseSalaryForm(request.POST)
-
         if form.is_valid():
             form.save()
-
     else:
         form = WhiteHouseSalaryForm()
-
     context = {
         'form': form
     }
-
     return render(request, template, context)
-
 
 def csv_upload(request):
     template = "csvUpload.html"
-
     prompt = {
         "order": "order must be employee_name , employee_status , salary , pay_basis , position_title"
     }
-
     if request.method == "GET":
         return render(request, template, prompt)
 
@@ -63,6 +53,13 @@ def csv_upload(request):
 
     context = {}
     return render(request, template, context)
+
+
+########################################### end CSV upload methods ######################################################################
+
+
+
+########################################### CRUD methods ######################################################################
 
 # Function that takes a request and displays it on the browser
 def salary_list(request, template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_list.html'):
@@ -101,8 +98,14 @@ def salary_delete(request, pk, template_name='/home/sargit/assesment/assesment/a
         return redirect('salary_list')
     return render(request, template_name, {'object': salary})
 
+########################################### end CRUD methods ######################################################################
+
+
+
+########################################### API methods ######################################################################
+
 def index(request):
-    response = json.dumps([{}])
+    response = json.dumps({})
     return HttpResponse(response,content_type='text/json')
 
 def get_salary(request,id):
@@ -137,4 +140,37 @@ def add_salary(request):
             response = json.dumps([{"Error" : 'Shit went sideways'}])
     return HttpResponse(response,content_type='text/json')
 
+########################################### end API methods ######################################################################
 
+
+########################################### Statistic methods methods ######################################################################
+
+# Statistic Non graphical
+def statistics_salary(request,template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_statistics.html'):
+    quaryset = WhiteHouseSalaries.objects.all()
+    df = read_frame(quaryset)
+
+    meanSalary=df['salary'].mean()
+    maxSalary= df['salary'].max()
+    minSalary= df['salary'].min()
+    totalSalaryExpenses= df['salary'].sum()
+    stdSalary = df['salary'].std()
+
+    employeeTypes = df.groupby(['employee_status']).sum()
+
+    print(employeeTypes['salary'])
+
+
+    data = {}
+    data['employeeTypes'] = employeeTypes
+    data['mean'] = meanSalary
+    data['max'] =maxSalary
+    data['min'] = minSalary
+    data['total'] = totalSalaryExpenses
+
+
+    return render(request, template_name, data)
+
+
+
+    
