@@ -215,6 +215,23 @@ def pychart(request):
     return response
 
 
+def std(request):
+    quaryset = WhiteHouseSalaries.objects.all()
+    df = read_frame(quaryset)   
+
+    npArr=df["salary"].to_numpy()
+
+    stdArr = np.std(npArr)
+
+    df_combined= df.groupby('employee_status').salary.std().to_numpy()
+
+
+    plt.bar(df['salary'],stdArr)
+    # df_plot = df.plot(x='salary',y='employee_status')
+    svg=pltToSvg()
+    plt.cla()
+    response = HttpResponse(svg, content_type='image/svg+xml')
+    return response
 
 
 def box_plot(request):
