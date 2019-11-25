@@ -26,4 +26,12 @@ RULES
 - DB modeling in models.py
 - you are free to use styling or such, but we are focusing on logic and functionality.
 
+
+
+-visualizations van een statistical correlamatrix 
+
+std
+boxplot = position and salary 
+pychart 
+
  

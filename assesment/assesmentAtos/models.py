@@ -11,6 +11,4 @@ class WhiteHouseSalaries(models.Model):
     def __str__(self):
         return f" {self.employee_status} , {self.employee_name} "
 
-    def get_absolute_url(self):
-        return reverse("salary_edit", kwargs={"pk": self.pk})
-    
+

@@ -6,7 +6,11 @@ from .models import WhiteHouseSalaries
 from .forms import WhiteHouseSalaryForm
 from django_pandas.io import read_frame
 from django.views.decorators.csrf import csrf_exempt
-
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.backends.backend_svg import FigureCanvas
+import numpy as np
+import pandas as pd
 
 ########################################### CSV upload methods ######################################################################
 def whitehousesalary(request):
@@ -80,8 +84,8 @@ def salary_create(request, template_name='/home/sargit/assesment/assesment/asses
     return render(request, template_name, {'form': form})
 
 # function that creates new row in the database
-def salary_update(request, id, template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_form.html'):
-    salary = get_object_or_404(WhiteHouseSalaries, pk=id)
+def salary_update(request, pk, template_name='/home/sargit/assesment/assesment/assesmentAtos/templates/salary_form.html'):
+    salary = get_object_or_404(WhiteHouseSalaries, pk=pk)
     form = WhiteHouseSalaryForm(request.POST or None, instance=salary)
     if form.is_valid():
         form.save()
@@ -155,7 +159,8 @@ def statistics_salary(request,template_name='/home/sargit/assesment/assesment/as
     employeeTypes = df['employee_status'].unique()
 
     employeeMeanTable = df.groupby('employee_status').salary.mean()
-
+     
+    
     employeeMean=[]
     for row in employeeMeanTable:
         employeeMean.append(row)
@@ -169,9 +174,80 @@ def statistics_salary(request,template_name='/home/sargit/assesment/assesment/as
     data['min'] = minSalary
     data['total'] = totalSalaryExpenses
 
-
     return render(request, template_name, data)
 
 
 
-    
+
+
+def plot_corr(df):
+    f, ax = plt.subplots(figsize=(10, 8))
+    corr = df.corr('pearson')
+    sns.heatmap(corr, mask=np.zeros_like(corr, dtype=np.bool), cmap=sns.diverging_palette(220, 10, as_cmap=True),square=True, ax=ax)
+
+def pltToSvg():
+    buf = io.BytesIO()
+    plt.savefig(buf, format='svg', bbox_inches='tight')
+    s = buf.getvalue()
+    buf.close()
+    return s
+
+def correlation_matrix(request):
+    quaryset = WhiteHouseSalaries.objects.all()
+    df = read_frame(quaryset)
+    f, ax = plt.subplots(figsize=(10, 8))
+    corr = df.corr('pearson')
+    sns.heatmap(corr, cmap=sns.diverging_palette(220, 10, as_cmap=True))
+    svg = pltToSvg() # convert plot to SVG
+    plt.cla() # clean up plt so it can be re-used
+    response = HttpResponse(svg, content_type='image/svg+xml')
+    return response
+
+
+def pychart(request):
+    quaryset = WhiteHouseSalaries.objects.all()
+    df = read_frame(quaryset)
+    df_combined= df.groupby('employee_status').salary.mean()
+    pie = df_combined.plot.pie(y='employee_status')
+    svg=pltToSvg()
+    plt.cla()
+    response = HttpResponse(svg, content_type='image/svg+xml')
+    return response
+
+
+
+
+def box_plot(request):
+    quaryset = WhiteHouseSalaries.objects.all()
+    df = read_frame(quaryset)
+
+    boxplot=df.boxplot(['salary'],by=['employee_status'])
+    svg=pltToSvg()
+    plt.cla()
+    response = HttpResponse(svg, content_type='image/svg+xml')
+    return response
+
+
+def getTitle(postition_title):
+    position = postition_title.tolist()
+    titles=[]
+    for title in position:
+        title.lower()
+        if title=="assistant":
+            titles.append(title)
+        if title=="director":
+            titles.append(title)
+        if title=="councel":
+            titles.append(title)
+
+    isUnique(titles)
+    return pd.Series(titles,name='titles')
+
+def isUnique(list):
+
+    unique=[]
+    for item in list:
+        if item not in unique:
+            unique.append(item)
+    return unique
+
